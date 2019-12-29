@@ -10,9 +10,9 @@ To reiterate, this is not an appropriate way to implement an actual deque. A cir
 would probably fit wtih Javascript better, but not as cool in my opinion.
 
 # Resources
-It is created based on Prof. David Galles' source code and animation library. 
+It is created based on [Prof. David Galles'](https://www.cs.usfca.edu/~galles/) source code and animation library. 
 
-Link to many more cool visualizations for all kinds of alogrithms and data structures:\
+He has made many more cool visualizations for numerous alogrithms and data structures:\
 https://www.cs.usfca.edu/~galles/visualization/Algorithms.html \
 Source code page:\
 https://www.cs.usfca.edu/~galles/visualization/source.html
