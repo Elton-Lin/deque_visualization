@@ -42,6 +42,7 @@
 // To reiterate, this is not an appropriate way to implement an actual deque. A circular buffer 
 // would probably fit wtih Javascript better, but not as cool in my opinion.
 
+
 var ARRAY_START_X = 330;
 var ARRAY_START_Y = 140;
 var ARRAY_ELEM_WIDTH = 50;
@@ -297,9 +298,15 @@ DequeArray.prototype.setup = function()
 	
 }
 
-// not sure when this is called (guessing at the skip back button?)
+// called by the skipback button
 DequeArray.prototype.reset = function()
 {
+	// Reset all of your data structures to *exactly* the state they have immediately after the init
+	// function is called.  This method is called whenever an "undo" is performed.  Your data
+	// structures are completely cleaned, and then all of the actions *up to but not including* the
+	// last action are then redone.  If you implement all of your actions through the "implementAction"
+	// method below, then all of this work is done for you in the Animation "superclass"
+
 	this.expandedEnd = false;
 	this.expandedBegin = false;
 	this.begin = INITIAL_LOC;
