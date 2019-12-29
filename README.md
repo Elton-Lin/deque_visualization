@@ -1,6 +1,7 @@
 # A Simple Deque Visualization
 This visualization supports basic operations of a deque (double-ended queue), including push/pop front/back. 
-
+## Run visualization
+You need to download/clone the repository to your local machine and run the file DequeArray.html on any browser.
 # Motivation
 The deque presented here is inspired by the C++ STL. However, the code simulates allocating pointers (fixed-size arrays) 
 dynamically by preallocate a constant number of arrays to achieve the desired animation result and ease of control over 
