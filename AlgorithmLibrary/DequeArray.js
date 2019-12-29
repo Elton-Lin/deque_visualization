@@ -24,13 +24,15 @@
 // authors and should not be interpreted as representing official policies, either expressed
 // or implied, of the University of San Francisco
 
-// Elton Lin, 12/20/2019 - Visualization for Deque - implementated with array
-// created based on Prof. Galles' source code and animation library
+
+
+// Elton Lin, 12/20/2019 - Visualization for Deque, implementated with array.
+// It is created based on Prof. Galles' source code and animation library
 // link: https://www.cs.usfca.edu/~galles/visualization/Algorithms.html
-// TODO: copy this to other deque files
 
 // other resources used (readings):
 // https://en.wikipedia.org/wiki/Double-ended_queue
+// https://en.cppreference.com/w/cpp/container/deque
 // https://www.codeproject.com/Articles/5425/An-In-Depth-Study-of-the-STL-Deque-Container
 // https://stackoverflow.com/questions/6292332/what-really-is-a-deque-in-stl
 
@@ -68,6 +70,7 @@ var INDEX_COLOR = "#0000FF"
 var SIZE = 5;
 var CHUNK_SIZE = 3;
 var NUM_CHUNKS = 3;
+var INITIAL_LOC = 5; // index of first element(pushBack)
 
 var CHUNK_START_X = 500;
 var CHUNK_START_Y = 50;
@@ -157,7 +160,7 @@ DequeArray.prototype.disableUI = function(event)
 	}
 }
 
-
+// display a new chunk
 DequeArray.prototype.allocateChunk = function(num)
 {
 
@@ -241,9 +244,9 @@ DequeArray.prototype.setup = function()
 	
 	this.chunkData = new Array(CHUNK_SIZE * NUM_CHUNKS);
 
-	// values don't directly display, but indicate position that the arrow pointing rather
-	this.begin = 5; // init == end, should start at middle of the chunk array
-	this.end = 5;
+	// values don't directly display, but indicate position that the arrow pointing
+	this.begin = INITIAL_LOC; // init == end, should start at middle of the chunk array
+	this.end = INITIAL_LOC;
 
 	this.arrayData = new Array(SIZE);
 	// this.head = 0;
@@ -260,7 +263,7 @@ DequeArray.prototype.setup = function()
 
 		this.cmd("CreateRectangle", this.arrayID[i],"", ARRAY_ELEM_WIDTH, ARRAY_ELEM_HEIGHT,xpos, ypos);
 
-		if(i > 0 && i < 4) {
+		if(i > 0 && i < SIZE - 1) {
 			var lab = "chunk " + (i - 1);
 			this.cmd("CreateLabel",this.arrayLabelID[i],  lab,  xpos, ypos);
 			this.cmd("SetForegroundColor", this.arrayLabelID[i], INDEX_COLOR);
@@ -294,20 +297,19 @@ DequeArray.prototype.setup = function()
 	
 }
 
-// don't know when this is called (guessing at skip back?)
+// not sure when this is called (guessing at the skip back button?)
 DequeArray.prototype.reset = function()
 {
 	this.expandedEnd = false;
 	this.expandedBegin = false;
-	this.begin = 5;
-	this.end = 5;
+	this.begin = INITIAL_LOC;
+	this.end = INITIAL_LOC;
 	this.nextIndex = this.initialIndex;
 
 }
 		
 DequeArray.prototype.pushFrontCallback = function(event) {
 
-	// if chunk has room, assign values, this.inputField.value != ""
 	if (this.begin != 0 && this.inputFieldFront.value != "") 
 	{
 		var pushVal = this.inputFieldFront.value;
@@ -319,7 +321,7 @@ DequeArray.prototype.pushFrontCallback = function(event) {
 
 DequeArray.prototype.popFrontCallback = function(event)
 {
-	if(this.begin < 5)
+	if(this.begin < INITIAL_LOC)
 	{
 		this.implementAction(this.popFront.bind(this), "");
 	}
@@ -327,7 +329,7 @@ DequeArray.prototype.popFrontCallback = function(event)
 
 DequeArray.prototype.pushBackCallback = function(event)
 {
-	if(this.end != 8 && this.inputFieldBack.value != "")
+	if(this.end != (NUM_CHUNKS * CHUNK_SIZE - 1) && this.inputFieldBack.value != "")
 	{
 		var pVal = this.inputFieldBack.value;
 		this.inputFieldBack.value = ""
@@ -337,7 +339,7 @@ DequeArray.prototype.pushBackCallback = function(event)
 
 DequeArray.prototype.popBackCallback = function(event)
 {
-	if(this.end > 5)
+	if(this.end > INITIAL_LOC)
 	{
 		this.implementAction(this.popBack.bind(this), "");
 	}
@@ -355,27 +357,6 @@ DequeArray.prototype.restartCallback = function(event)
 	this.implementAction(this.clearAll.bind(this), true);
 }
 
-// DequeArray.prototype.enqueueCallback = function(event)
-// {
-// 	if ((this.tail + 1) % SIZE  != this.head && this.inputField.value != "")
-// 	{
-// 		//this.cmd("CreateLabel", this.chunkID[0], "abc", 800, 80);
-// 		var pushVal = this.inputField.value;
-// 		this.inputField.value = "";
-// 		this.implementAction(this.enqueue.bind(this), pushVal);
-// 	}
-// }
-		
-		
-// DequeArray.prototype.dequeueCallback = function(event)
-// {
-// 	//this.cmd("CreateRectangle", ++this.nextIndex,"13", ARRAY_ELEM_WIDTH, ARRAY_ELEM_HEIGHT,800, 90);
-// 	if (this.tail != this.head)
-// 	{
-// 		this.implementAction(this.dequeue.bind(this), "");
-// 	}
-// }
-
 
 DequeArray.prototype.pushFront = function(elemToPush) {
 	
@@ -385,47 +366,45 @@ DequeArray.prototype.pushFront = function(elemToPush) {
 	if(this.begin == 3 && !this.expandedBegin)
 	{
 		this.allocateChunk(0);
+		this.cmd("step");
 		this.cmd("connect", this.arrayLabelID[1], this.chunkID[0]);
+		
 		this.expandedBegin = true;
 	}
 
-
+	// label under input boxes "push value: []"
 	var labID = this.nextIndex++;
 	var labValID = this.nextIndex++;
-	
 	this.cmd("SetText", this.leftoverLabelID, "");
-	
 	this.cmd("CreateLabel", labID, "Push Value: ", ARRAY_LABEL_X, ARRAY_LABEL_Y);
 	this.cmd("CreateLabel", labValID,elemToPush, ARRAY_ELEMENT_X, ARRAY_ELEMENT_Y);
 	
+	// init animation circle and highlight
 	this.cmd("Step");		
 	this.cmd("CreateHighlightCircle", this.highlight1ID, INDEX_COLOR,  HEAD_POS_X, HEAD_POS_Y);
 	this.cmd("Step");
 	
-	
+	// update arrows
 	this.cmd("disconnect", this.beginID, this.chunkID[this.begin]);
-	// move up to an empty spot
-	this.begin = this.begin - 1;
+	this.begin = this.begin - 1; // move up to an empty spot
 	this.chunkData[this.begin] = elemToPush;
 	this.cmd("connect", this.beginID, this.chunkID[this.begin]);
 
+	// init highlight circle
 	var xpos = CHUNK_START_X;
-	// 10 for spacing between chunks
 	var ypos = this.begin * ARRAY_ELEM_HEIGHT + CHUNK_START_Y + Math.floor(this.begin / CHUNK_SIZE) * 10; 
-
 	this.cmd("Move", this.highlight1ID, xpos, ypos);			
 	this.cmd("Step");
 	
-	this.cmd("Settext", this.chunkID[this.begin], elemToPush); // added
+	// display pushed value in box
+	this.cmd("Settext", this.chunkID[this.begin], elemToPush);
+
+	this.cmd("SetHighlight", this.chunkID[this.begin], 1);
+	this.cmd("Step");
+	this.cmd("SetHighlight", this.chunkID[this.begin], 0);
 
 	this.cmd("Delete", labValID);
 	this.cmd("Delete", this.highlight1ID);
-	
-	this.cmd("SetHighlight", this.chunkID[this.begin], 1);
-	this.cmd("Step");
-
-
-	this.cmd("SetHighlight", this.chunkID[this.begin], 0);
 	this.cmd("Delete", labID);
 	
 	this.updateDataLabels();
@@ -438,39 +417,64 @@ DequeArray.prototype.pushBack = function(elemToPush) {
 
 	this.commands = new Array();
 
+	// label under input boxes "push value: []"
+	var labID = this.nextIndex++;
+	var labValID = this.nextIndex++;
+	this.cmd("SetText", this.leftoverLabelID, "");
+	this.cmd("CreateLabel", labID, "Push Value: ", ARRAY_LABEL_X, ARRAY_LABEL_Y);
+	this.cmd("CreateLabel", labValID,elemToPush, ARRAY_ELEMENT_X, ARRAY_ELEMENT_Y);
+
+	// init animation circle and highlight
+	this.cmd("Step");
+	this.cmd("CreateHighlightCircle", this.highlight1ID, INDEX_COLOR,  TAIL_POS_X, TAIL_POS_Y);
 	this.cmd("Step");
 
+
+	// move highlight circle
+	var xpos = CHUNK_START_X;
+	var ypos = this.end * ARRAY_ELEM_HEIGHT + CHUNK_START_Y + Math.floor(this.end / CHUNK_SIZE) * 10; 
+	this.cmd("Move", this.highlight1ID, xpos, ypos);			
+	this.cmd("Step");
+
+	// display pushed value
+	this.cmd("settext", this.chunkID[this.end], elemToPush);
+
+	this.cmd("Delete", labValID);
+	this.cmd("Delete", labID);
+	this.cmd("Delete", this.highlight1ID);
+
+	// highlight box
+	this.cmd("SetHighlight", this.chunkID[this.end], 1);
+	this.cmd("Step");
+	this.cmd("SetHighlight", this.chunkID[this.end], 0);
+	
 	// "allocate" new chunk when current chunk full
 	if(this.end == 5 && !this.expandedEnd)
 	{
 		this.allocateChunk(2);
 		this.cmd("connect", this.arrayLabelID[3], this.chunkID[6]);
+		this.cmd("step");
 		this.expandedEnd = true;
 	}
 
-	this.chunkData[this.end] = elemToPush;
-	this.cmd("settext", this.chunkID[this.end], elemToPush);
-
-	this.cmd("Step");
-
+	// update arrows
 	this.cmd("disconnect", this.endID, this.chunkID[this.end]);
 	this.end = this.end + 1;
+	this.chunkData[this.end] = elemToPush;
 	this.cmd("connect", this.endID, this.chunkID[this.end]);
 
 	this.updateDataLabels();
-
 	return this.commands;
 
 }
 
+// decided to not add other animation to keep it simple
 DequeArray.prototype.popFront = function(ignored) {
-
 
 	this.commands = new Array();
 
 	// can add animations just like in pushFront
 	this.cmd("Settext", this.chunkID[this.begin], ""); // remove elem
-
 	this.cmd("disconnect", this.beginID, this.chunkID[this.begin]);
 	this.begin = this.begin + 1;
 	this.cmd("connect", this.beginID, this.chunkID[this.begin]);
@@ -530,8 +534,8 @@ DequeArray.prototype.clearAll = function(isRestart)
 	
 	this.cmd("disconnect", this.beginID, this.chunkID[this.begin]);
 	this.cmd("disconnect", this.endID, this.chunkID[this.end]);
-	this.begin = 5;
-	this.end = 5;
+	this.begin = INITIAL_LOC;
+	this.end = INITIAL_LOC;
 	this.cmd("connect", this.beginID, this.chunkID[this.begin]);
 	this.cmd("connect", this.endID, this.chunkID[this.end]);
 
