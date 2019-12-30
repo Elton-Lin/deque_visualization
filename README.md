@@ -2,7 +2,7 @@
 This visualization supports basic operations of a deque (double-ended queue), including push/pop front/back. 
 ## Run visualization
 You need to download/clone the repository to your local machine and run the file DequeArray.html on any browser.
-# Motivation
+## Motivation
 The deque presented here is inspired by the C++ STL. However, the code simulates allocating pointers (fixed-size arrays) 
 dynamically by preallocate a constant number of arrays to achieve the desired animation result and ease of control over 
 arrays elements and index.
@@ -10,7 +10,7 @@ arrays elements and index.
 To reiterate, this is not an appropriate way to implement an actual deque. A circular buffer 
 would probably fit wtih Javascript better, but not as cool in my opinion.
 
-# Resources
+## Resources
 It is created based on [Prof. David Galles'](https://www.cs.usfca.edu/~galles/) source code and animation library. 
 
 He has made many more cool visualizations for numerous alogrithms and data structures:\
